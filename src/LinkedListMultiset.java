@@ -306,21 +306,28 @@ public class LinkedListMultiset<T> extends Multiset<T> {
 		public Iterator<U> iterator() {
 			return new Iterator<U>() {
 
-				private int currentIndex = 0;
+				Node<U> current = mHead;
 
 				@Override
 				public boolean hasNext() {
-					return currentIndex < mLength && get(currentIndex) != null;
+					return current != null;
 				}
 
 				@Override
 				public U next() {
-					return hasNext() ? get(currentIndex++) : null;
+					if (hasNext()) {
+						U ret = current.getValue();
+						current = current.getNext();
+						return ret;
+					}
+					return null;
 				}
 
 				@Override
 				public void remove() {
-					LinkedListMultiset.DoubleLinkedList.this.remove(currentIndex);
+					Node<U> tmp = current;
+					current = current.getNext();
+					LinkedListMultiset.DoubleLinkedList.this.unlinkNode(tmp);
 				}
 			};
 		}
