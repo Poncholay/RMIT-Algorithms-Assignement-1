@@ -1,6 +1,6 @@
 import java.io.*;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TestGenerator {
 	private Integer multisetSize;
@@ -16,10 +16,20 @@ public class TestGenerator {
 
 	private void generateOperations(PrintWriter writer) throws IOException {
 		String[] commands = {"A", "S", "RO", "RA"};
+		List<Integer> searches = new ArrayList<>();
 
 		int[] op = generator.sampleWithReplacement(nbOperations);
 		for (int i = 0; i < op.length; i++) {
-			writer.println(commands[op[i] % commands.length] + " " + data[i % data.length]);
+			String command = commands[op[i] % commands.length];
+			int number = data[i % data.length];
+			if (command.equals("S")) {
+				if (!searches.contains(number)) {
+					searches.add(number);
+				} else {
+					continue;
+				}
+			}
+			writer.println(command + " " + number);
 		}
 		writer.println("P");
 	}
@@ -31,30 +41,11 @@ public class TestGenerator {
 		}
 	}
 
-	private void removeDuplicateSearch(String name) throws IOException {
-		BufferedReader reader = new BufferedReader(new FileReader(name));
-		Set<String> lines = new LinkedHashSet<>(multisetSize + nbOperations + 1);
-
-		String line;
-		while ((line = reader.readLine()) != null) {
-			lines.add(line);
-		}
-		reader.close();
-
-		BufferedWriter writer = new BufferedWriter(new FileWriter(name));
-		for (String unique : lines) {
-			writer.write(unique);
-			writer.newLine();
-		}
-		writer.close();
-	}
-
 	private void generateSequence(String name) throws IOException {
 		new File(name).createNewFile();
 		PrintWriter writer = new PrintWriter(new FileWriter(name), true);
 		generateMultiset(writer);
 		generateOperations(writer);
-		removeDuplicateSearch(name);
 	}
 
 	private void generateOutput(String name) throws IOException {
@@ -101,6 +92,6 @@ public class TestGenerator {
 	}
 
 	static public void main(String args[]) throws Exception {
-		new TestGenerator(150, 300).generateTest();
+		new TestGenerator(150, 150).generateTest();
 	}
 }
