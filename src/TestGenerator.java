@@ -1,26 +1,36 @@
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class TestGenerator {
-	private Integer multisetSize;
-	private Integer nbOperations;
+	private int multisetSize;
+	private int nbOperations;
 	private IntegerGenerator generator;
 	private int[] data;
+	private List<String> commands;
+
+	public TestGenerator(int multisetSize) {
+		this(multisetSize, 0);
+	}
 
 	public TestGenerator(int multisetSize, int nbOperations) {
+		this(multisetSize, nbOperations, Arrays.asList("A", "S", "RO", "RA"));
+	}
+
+	public TestGenerator(int multisetSize, int nbOperations, List<String> commands) {
 		this.multisetSize = multisetSize;
 		this.nbOperations = nbOperations;
 		this.generator = new IntegerGenerator(0, multisetSize * 2, System.currentTimeMillis());
+		this.commands = commands;
 	}
 
-	private void generateOperations(PrintWriter writer) throws IOException {
-		String[] commands = {"A", "S", "RO", "RA"};
+	private void generateOperations(PrintWriter writer) {
 		List<Integer> searches = new ArrayList<>();
 
 		int[] op = generator.sampleWithReplacement(nbOperations);
 		for (int i = 0; i < op.length; i++) {
-			String command = commands[op[i] % commands.length];
+			String command = commands.get(op[i] % commands.size());
 			int number = data[i % data.length];
 			if (command.equals("S")) {
 				if (!searches.contains(number)) {
@@ -91,7 +101,95 @@ public class TestGenerator {
 		generateOutput(name);
 	}
 
+	public static class Builder {
+
+		private int multisetSize;
+		private int nbOperations;
+		private List<String> commands;
+
+		public Builder() {
+			commands = new ArrayList<>();
+		}
+
+		public TestGenerator build() {
+			if (commands.size() != 0) {
+				return new TestGenerator(multisetSize, nbOperations, commands);
+			}
+			return new TestGenerator(multisetSize, nbOperations);
+		}
+
+		public Builder size(int size) {
+			this.multisetSize = size;
+			return this;
+		}
+
+		public Builder operations(int operations) {
+			this.nbOperations = operations;
+			return this;
+		}
+
+		public Builder add() {
+			commands.add("A");
+			return this;
+		}
+
+		public Builder remove() {
+			commands.add("RO");
+			return this;
+		}
+
+		public Builder removeAll() {
+			commands.add("RA");
+			return this;
+		}
+
+		public Builder search() {
+			commands.add("S");
+			return this;
+		}
+	}
+
 	static public void main(String args[]) throws Exception {
-		new TestGenerator(150, 150).generateTest();
+		//Growing multiset
+		for (int i = 0; i < 5; i++) {
+			int size = (int) Math.pow(10, i);
+			new TestGenerator.Builder().size(size).add().build().generateTest();
+		}
+
+		//Roughly static multiset
+		for (int i = 0; i < 5; i++) {
+			int size = (int) Math.pow(10, i);
+			new TestGenerator.Builder().size(size).operations(size).add().remove().build().generateTest();
+		}
+
+		//Shrinking multiset
+		for (int i = 0; i < 5; i++) {
+			int size = (int) Math.pow(10, i);
+			new TestGenerator.Builder().size(size).operations(size).remove().build().generateTest();
+		}
+
+		//Growing multiset with searches
+		for (int i = 0; i < 5; i++) {
+			int size = (int) Math.pow(10, i);
+			new TestGenerator.Builder().size(size).operations(size).add().search().build().generateTest();
+		}
+
+		//Roughly static multiset with searches
+		for (int i = 0; i < 5; i++) {
+			int size = (int) Math.pow(10, i);
+			new TestGenerator.Builder().size(size).operations(size).add().remove().search().build().generateTest();
+		}
+
+		//Shrinking multiset with searches
+		for (int i = 0; i < 5; i++) {
+			int size = (int) Math.pow(10, i);
+			new TestGenerator.Builder().size(size).operations(size).remove().search().build().generateTest();
+		}
+
+		//General multiset
+		for (int i = 0; i < 5; i++) {
+			int size = (int) Math.pow(10, i);
+			new TestGenerator.Builder().size(size).operations(size).build().generateTest();
+		}
 	}
 }
