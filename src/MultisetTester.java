@@ -12,7 +12,7 @@ public class MultisetTester
 	protected static final String progName = "src.main.java.MultisetTester";
 	
 	/** Standard outstream. */
-	protected static final PrintStream outStream = System.out;
+	public static PrintStream outStream = System.out;
 
 	/**
 	 * Print help/usage message.
@@ -158,7 +158,7 @@ public class MultisetTester
 		try {
 			BufferedReader inReader = new BufferedReader(new InputStreamReader(System.in));
 			PrintWriter searchOutWriter = new PrintWriter(System.out, true);
-			
+
 			if (searchOutFilename != null) {
 				searchOutWriter = new PrintWriter(new FileWriter(searchOutFilename), true);
 			}

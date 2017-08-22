@@ -12,27 +12,29 @@ public class BstMultiset<T> extends Multiset<T> {
 	}
 	
 	public void add(T item) {
-		if (mTree.contains(new LinkedListMultiset.MapTuple<>(item))) {
-			mTree.get(new LinkedListMultiset.MapTuple<>(item)).inc();
+		LinkedListMultiset.MapTuple<T> node = mTree.get(new LinkedListMultiset.MapTuple<>(item));
+		if (node != null) {
+			node.inc();
 		} else {
 			mTree.add(new LinkedListMultiset.MapTuple<>(item, 1));
 		}
 	}
 
 	public int search(T item) {
-		if (mTree.contains(new LinkedListMultiset.MapTuple<>(item))) {
-			return mTree.get(new LinkedListMultiset.MapTuple<>(item)).getIdx();
+		LinkedListMultiset.MapTuple<T> node = mTree.get(new LinkedListMultiset.MapTuple<>(item));
+		if (node != null) {
+			return node.getIdx();
 		}
 		return 0;
 	}
 
 	public void removeOne(T item) {
-		if (mTree.contains(new LinkedListMultiset.MapTuple<>(item))) {
-			LinkedListMultiset.MapTuple<T> node = mTree.get(new LinkedListMultiset.MapTuple<>(item));
+		LinkedListMultiset.MapTuple<T> node = mTree.get(new LinkedListMultiset.MapTuple<>(item));
+		if (node != null) {
 			if (node.getIdx() > 1) {
 				node.dec();
 			} else {
-				removeAll(item);
+				mTree.remove(node);
 			}
 		}
 	}
@@ -128,7 +130,7 @@ public class BstMultiset<T> extends Multiset<T> {
 					mHead = null;
 				} else if (node.getParent().getLeft() == node) {
 					node.getParent().setLeft(null);
-				} else {
+				} else if (node.getParent().getRight() == node) {
 					node.getParent().setRight(null);
 				}
 				return;
@@ -141,12 +143,11 @@ public class BstMultiset<T> extends Multiset<T> {
 				node.replaceWith(node.getLeft());
 				return;
 			}
-			Node<U> tmp = node.getLeft();
 
+			Node<U> tmp = node.getLeft();
 			while (tmp.getRight() != null) {
 				tmp = tmp.getRight();
 			}
-
 			node.setValue(tmp.getValue());
 			unlink(tmp);
 		}
@@ -166,6 +167,7 @@ public class BstMultiset<T> extends Multiset<T> {
 			if (node == null) {
 				return null;
 			}
+
 			int diff = compare(value, node.getValue());
 			if (diff < 0) {
 				return get(value, node.getLeft());
@@ -215,7 +217,7 @@ public class BstMultiset<T> extends Multiset<T> {
 					Node<U> node = mStack.pop();
 					Node<U> tmp = node.getRight();
 
-					while (tmp != null){
+					while (tmp != null) {
 						mStack.push(tmp);
 						tmp = tmp.getLeft();
 					}
@@ -251,6 +253,12 @@ public class BstMultiset<T> extends Multiset<T> {
 				mValue = other.getValue();
 				mRight = other.getRight();
 				mLeft = other.getLeft();
+				if (mRight != null) {
+					mRight.setParent(this);
+				}
+				if (mLeft != null) {
+					mLeft.setParent(this);
+				}
 			}
 
 			public void setValue(V value) {
