@@ -150,45 +150,21 @@ public class TestGenerator {
 	}
 
 	static public void main(String args[]) throws Exception {
-		//Growing multiset
 		for (int i = 0; i < 5; i++) {
 			int size = (int) Math.pow(10, i);
+			//Growing multiset
 			new TestGenerator.Builder().size(size).add().build().generateTest();
-		}
-
-		//Roughly static multiset
-		for (int i = 0; i < 5; i++) {
-			int size = (int) Math.pow(10, i);
+			//Roughly static multiset
 			new TestGenerator.Builder().size(size).operations(size).add().remove().build().generateTest();
-		}
-
-		//Shrinking multiset
-		for (int i = 0; i < 5; i++) {
-			int size = (int) Math.pow(10, i);
+			//Shrinking multiset
 			new TestGenerator.Builder().size(size).operations(size).remove().build().generateTest();
-		}
-
-		//Growing multiset with searches
-		for (int i = 0; i < 5; i++) {
-			int size = (int) Math.pow(10, i);
+			//Growing multiset with searches
 			new TestGenerator.Builder().size(size).operations(size).add().search().build().generateTest();
-		}
-
-		//Roughly static multiset with searches
-		for (int i = 0; i < 5; i++) {
-			int size = (int) Math.pow(10, i);
+			//Roughly static multiset with searches
 			new TestGenerator.Builder().size(size).operations(size).add().remove().search().build().generateTest();
-		}
-
-		//Shrinking multiset with searches
-		for (int i = 0; i < 5; i++) {
-			int size = (int) Math.pow(10, i);
+			//Shrinking multiset with searches
 			new TestGenerator.Builder().size(size).operations(size).remove().search().build().generateTest();
-		}
-
-		//General multiset
-		for (int i = 0; i < 5; i++) {
-			int size = (int) Math.pow(10, i);
+			//General multiset
 			new TestGenerator.Builder().size(size).operations(size).build().generateTest();
 		}
 	}
