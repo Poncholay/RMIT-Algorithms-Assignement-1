@@ -6,23 +6,25 @@ import java.util.List;
 public class TestGenerator {
 	private int multisetSize;
 	private int nbOperations;
+	private String name;
 	private IntegerGenerator generator;
 	private int[] data;
 	private List<String> commands;
 
 	public TestGenerator(int multisetSize) {
-		this(multisetSize, 0);
+		this(multisetSize, 0, "");
 	}
 
-	public TestGenerator(int multisetSize, int nbOperations) {
-		this(multisetSize, nbOperations, Arrays.asList("A", "S", "RO", "RA"));
+	public TestGenerator(int multisetSize, int nbOperations, String name) {
+		this(multisetSize, nbOperations, Arrays.asList("A", "S", "RO", "RA"), name);
 	}
 
-	public TestGenerator(int multisetSize, int nbOperations, List<String> commands) {
+	public TestGenerator(int multisetSize, int nbOperations, List<String> commands, String name) {
 		this.multisetSize = multisetSize;
 		this.nbOperations = nbOperations;
 		this.generator = new IntegerGenerator(0, multisetSize * 2, System.currentTimeMillis());
 		this.commands = commands;
+		this.name = name;
 	}
 
 	private void generateOperations(PrintWriter writer) {
@@ -49,6 +51,7 @@ public class TestGenerator {
 		for (int i : data) {
 			writer.println("A" + " " + i);
 		}
+		writer.println("P");
 	}
 
 	private void generateSequence(String name) throws IOException {
@@ -59,7 +62,7 @@ public class TestGenerator {
 	}
 
 	private void generateOutput(String name) throws IOException {
-		String input = name + ".in";
+		String input = name + "." + this.name + ".in";
 		String out = name + ".exp";
 		String searchOut = name + ".search.exp";
 
@@ -97,7 +100,7 @@ public class TestGenerator {
 	public void generateTest() throws Exception {
 		String name = generateName();
 
-		generateSequence(name + ".in");
+		generateSequence(name + "." + this.name + ".in");
 		generateOutput(name);
 	}
 
@@ -105,6 +108,7 @@ public class TestGenerator {
 
 		private int multisetSize;
 		private int nbOperations;
+		private String name;
 		private List<String> commands;
 
 		public Builder() {
@@ -113,9 +117,9 @@ public class TestGenerator {
 
 		public TestGenerator build() {
 			if (commands.size() != 0) {
-				return new TestGenerator(multisetSize, nbOperations, commands);
+				return new TestGenerator(multisetSize, nbOperations, commands, name);
 			}
-			return new TestGenerator(multisetSize, nbOperations);
+			return new TestGenerator(multisetSize, nbOperations, name);
 		}
 
 		public Builder size(int size) {
@@ -147,25 +151,32 @@ public class TestGenerator {
 			commands.add("S");
 			return this;
 		}
+
+		public Builder name(String name) {
+			this.name = name;
+			return this;
+		}
 	}
 
 	static public void main(String args[]) throws Exception {
 		for (int i = 0; i < 5; i++) {
 			int size = (int) Math.pow(10, i);
 			//Growing multiset
-			new TestGenerator.Builder().size(size).add().build().generateTest();
+			new TestGenerator.Builder().name("grow" + " " + i).size(size).add().build().generateTest();
 			//Roughly static multiset
-			new TestGenerator.Builder().size(size).operations(size).add().remove().build().generateTest();
+			new TestGenerator.Builder().name("maintain" + " " + i).size(size).operations(size).add().remove().build().generateTest();
 			//Shrinking multiset
-			new TestGenerator.Builder().size(size).operations(size).remove().build().generateTest();
+			new TestGenerator.Builder().name("decrease" + " " + i).size(size).operations(size).remove().build().generateTest();
 			//Growing multiset with searches
-			new TestGenerator.Builder().size(size).operations(size).add().search().build().generateTest();
+			new TestGenerator.Builder().name("grow-search" + " " + i).size(size).operations(size).add().search().build().generateTest();
 			//Roughly static multiset with searches
-			new TestGenerator.Builder().size(size).operations(size).add().remove().search().build().generateTest();
+			new TestGenerator.Builder().name("maintain-search" + " " + i).size(size).operations(size).add().remove().search().build().generateTest();
 			//Shrinking multiset with searches
-			new TestGenerator.Builder().size(size).operations(size).remove().search().build().generateTest();
+			new TestGenerator.Builder().name("decrease-search" + " " + i).size(size).operations(size).remove().search().build().generateTest();
+			//Multiset with searches
+			new TestGenerator.Builder().name("search" + " " + i).size(size).operations(size).search().build().generateTest();
 			//General multiset
-			new TestGenerator.Builder().size(size).operations(size).build().generateTest();
+			new TestGenerator.Builder().name("random" + " " + i).size(size).operations(size).build().generateTest();
 		}
 	}
 }
