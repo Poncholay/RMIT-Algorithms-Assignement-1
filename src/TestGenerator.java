@@ -63,8 +63,8 @@ public class TestGenerator {
 
 	private void generateOutput(String name) throws IOException {
 		String input = name + "." + this.name + ".in";
-		String out = name + ".exp";
-		String searchOut = name + ".search.exp";
+		String out = name + "." + this.name + ".exp";
+		String searchOut = name + "." + this.name + ".search.exp";
 
 		new File(out).createNewFile();
 		new File(searchOut).createNewFile();
