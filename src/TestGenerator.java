@@ -44,6 +44,7 @@ public class TestGenerator {
 			writer.println(command + " " + number);
 		}
 		writer.println("P");
+		writer.println("Q");
 	}
 
 	private void generateMultiset(PrintWriter writer) throws IOException {
@@ -51,7 +52,7 @@ public class TestGenerator {
 		for (int i : data) {
 			writer.println("A" + " " + i);
 		}
-		writer.println("P");
+		writer.println("X");
 	}
 
 	private void generateSequence(String name) throws IOException {
@@ -162,21 +163,21 @@ public class TestGenerator {
 		for (int i = 0; i < 5; i++) {
 			int size = (int) Math.pow(10, i);
 			//Growing multiset
-			new TestGenerator.Builder().name("grow" + " " + i).size(size).add().build().generateTest();
+			new TestGenerator.Builder().name("grow" + "_" + i).size(size).add().build().generateTest();
 			//Roughly static multiset
-			new TestGenerator.Builder().name("maintain" + " " + i).size(size).operations(size).add().remove().build().generateTest();
+			new TestGenerator.Builder().name("maintain" + "_" + i).size(size).operations(size).add().remove().build().generateTest();
 			//Shrinking multiset
-			new TestGenerator.Builder().name("decrease" + " " + i).size(size).operations(size).remove().build().generateTest();
+			new TestGenerator.Builder().name("decrease" + "_" + i).size(size).operations(size).remove().build().generateTest();
 			//Growing multiset with searches
-			new TestGenerator.Builder().name("grow-search" + " " + i).size(size).operations(size).add().search().build().generateTest();
+			new TestGenerator.Builder().name("grow-search" + "_" + i).size(size).operations(size).add().search().build().generateTest();
 			//Roughly static multiset with searches
-			new TestGenerator.Builder().name("maintain-search" + " " + i).size(size).operations(size).add().remove().search().build().generateTest();
+			new TestGenerator.Builder().name("maintain-search" + "_" + i).size(size).operations(size).add().remove().search().build().generateTest();
 			//Shrinking multiset with searches
-			new TestGenerator.Builder().name("decrease-search" + " " + i).size(size).operations(size).remove().search().build().generateTest();
+			new TestGenerator.Builder().name("decrease-search" + "_" + i).size(size).operations(size).remove().search().build().generateTest();
 			//Multiset with searches
-			new TestGenerator.Builder().name("search" + " " + i).size(size).operations(size).search().build().generateTest();
+			new TestGenerator.Builder().name("search" + "_" + i).size(size).operations(size).search().build().generateTest();
 			//General multiset
-			new TestGenerator.Builder().name("random" + " " + i).size(size).operations(size).build().generateTest();
+			new TestGenerator.Builder().name("random" + "_" + i).size(size).operations(size).build().generateTest();
 		}
 	}
 }

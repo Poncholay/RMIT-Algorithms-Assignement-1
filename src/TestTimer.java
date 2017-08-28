@@ -37,12 +37,12 @@ public class TestTimer {
 					}
 					break;
 				case "P":
+					multiset.print(new PrintStream(System.out));
+					break;
+				case "X":
 					if (startTime == -1) {
 						startTime = System.nanoTime();
-					} else {
-						multiset.print(new PrintStream(System.out));
 					}
-					break;
 				case "Q":
 					return;
 				default:
